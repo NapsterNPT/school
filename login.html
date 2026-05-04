@@ -1,0 +1,91 @@
+<!-- Copyright © 2025-2026 NapsterNPT. All rights reserved. -->
+
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="gB28t2pf-SDUrMkWtlW9TnWFft1RW0w7X2vPIpRmmdc">
+
+    <title>NapsterNPT's Website | School | Login</title>
+
+    <link rel="icon" type="image/png" href="assets/logo.png" />
+    <link rel="stylesheet" href="style.css" />
+
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+
+<body>
+    <header>
+        <h1>■ School Login ■</h1>
+    </header>
+
+    <div style="height: 150px;" class="second-container">
+        <h3 id="subtitle">Accedi con il tuo account scolastico.</h3>
+
+        <div id="g_id_onload" data-client_id="577870845475-2e6guus42cgdj0brtekrjcvupni0ni2k.apps.googleusercontent.com"
+            data-callback="onGoogleLogin" data-auto_prompt="false">
+        </div>
+        <div class="g_id_signin" data-type="standard" data-size="large" data-theme="filled_black"
+            data-text="signin_with" data-shape="rectangular" data-logo_alignment="left" data-width="280">
+        </div>
+
+        <p id="err" class="error_msg login_error_msg" style="display:none;">
+            Account non autorizzato, good try buddy!
+        </p>
+    </div>
+
+    <a class="exit-button" href="https://napsternpt.github.io">
+        <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px"
+            fill="var(--text-color)">
+            <path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z" />
+        </svg>
+        <p>Exit</p>
+    </a>
+
+    <footer>
+        <p>© 2025-2026 NapsterNPT. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const ALLOWED = new Set([
+            "d7b1a8329dfaa8fd27190c1f42c45dc1e210fb293c07ca08f25a7531bc0381d4",
+            "58cb0da8480400370cc57e24c0e6f5e6a9aa8a4e0f66642d2868844994c09ebb",
+            "aed787ecaa0aeef8f31706cf9bd2eb0655b7daab38e37502d275f83447f2e58c",
+            "b5f15ab6065e764262d6d2b0eb70571fa57b3c85383767eda4032df2a0df85cd",
+            "aa80dfbc8686192fa1cee8aa285edcaa635c99db20a31794072f0c8e5e1596d4"
+        ]);
+
+        async function sha256(str) {
+            const buf = await crypto.subtle.digest(
+                'SHA-256',
+                new TextEncoder().encode(str.trim().toLowerCase())
+            );
+            return Array.from(new Uint8Array(buf))
+                .map(b => b.toString(16).padStart(2, '0'))
+                .join('');
+        }
+
+        async function onGoogleLogin(response) {
+            try {
+                const payload = JSON.parse(atob(response.credential.split('.')[1]));
+                const email = payload.email || '';
+                const hash = await sha256(email);
+
+                if (ALLOWED.has(hash)) {
+                    sessionStorage.setItem('hw_auth', 'true');
+                    sessionStorage.setItem('hw_user', payload.name || email);
+                    window.location.href = 'index.html';
+                } else {
+                    document.getElementById('err').style.display = 'block';
+                }
+            } catch (e) {
+                console.error('Login error:', e);
+                document.getElementById('err').style.display = 'block';
+            }
+        }
+    </script>
+</body>
+
+</html>
